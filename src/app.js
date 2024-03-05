@@ -12,6 +12,19 @@ app.use(express.static("public"))
 
 app.use(cookieParser())
 
+//  above is just backend setup
+
+//
+
+
+//now start api routing
+
+import userRouter from "./routes/user.routes.js"
+
+
+app.use("/api/v1/users",userRouter)
+
+
 export {app}
 
 

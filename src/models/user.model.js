@@ -1,9 +1,10 @@
 import mongoose,{Schema} from "mongoose"
-
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 const userSchema=new Schema(
     {
 username: {
-    type : Stirng,
+    type : String,
     required : true,
     unique: true,
     lowercase:true,
@@ -11,7 +12,7 @@ username: {
     index:true
 },
    email: {
-    type : Stirng,
+    type : String,
     required : true,
     unique: true,
     lowercase:true,
@@ -19,17 +20,17 @@ username: {
     
 },
 fullName: {
-    type : Stirng,
+    type : String,
     required : true,
     trim:true,
     index :true
 },
 avatar: {
-    type : Stirng,
+    type : String,
     required : true,
 },
-coverimage: {
-    type : Stirng,
+coverImage: {
+    type : String,
     
 },
 watchHistory: {
@@ -38,7 +39,7 @@ watchHistory: {
     
 },
 password: {
-    type : Stirng,
+    type : String,
     required :[true,'Password is Required'],
     
 },
@@ -53,9 +54,11 @@ refreshToken:{
  
 userSchema.pre("save", async function (next){
     if(!this.isModified("password"))
-    return next()
-    this.paasword=bcrypt.hash(this.password, 10)
-    next()
+    return next();
+  
+    this.password= await bcrypt.hash(this.password, 10)
+    next();
+   
 })
 
      userSchema.methods.isPasswordCorrect =  async function (password){
@@ -63,13 +66,13 @@ userSchema.pre("save", async function (next){
         //true or false
      }
 
-     userScehma.methods.generateAccessToken=function(){
+     userSchema.methods.generateAccessToken=function(){
         return jwt.sign(
             {
-                _id:this._id,
-                email:this.email,
-                username:this.username,
-                fullName:this.fullName
+                _id: this._id,
+                email: this.email,
+                username: this.username,
+                fullName: this.fullName
             },
             process.env.ACCESS_TOKEN_SECRET,
             {
@@ -79,10 +82,10 @@ userSchema.pre("save", async function (next){
      }
 
      
-     userScehma.methods.generateRefreshToken=function(){
+     userSchema.methods.generateRefreshToken=function(){
         return jwt.sign(
             {
-                _id:this._id,
+                _id: this._id,
             },
             process.env.REFRESH_TOKEN_SECRET,
             {
