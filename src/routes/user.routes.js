@@ -1,6 +1,7 @@
 import {Router} from "express"
-import {registerUser} from "../controller/user.controller.js"
+import {loginUser, logoutUser, refreshAccessToken, registerUser} from "../controller/user.controller.js"
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router=Router();
 
 router.route("/register").post(
@@ -21,5 +22,16 @@ router.route("/register").post(
         ]),
         registerUser
         )
+ 
+router.route("/login").post(loginUser)
 
+//secured route
+
+router.route("/logout").post(
+       verifyJWT ,
+       logoutUser)    
+ //in middleware here is the use of next 
+// when verify is done ab next () 
+//means next method that is logoutUser ko run kro
+router.route("/refresh-token").post(refreshAccessToken)
 export default router
